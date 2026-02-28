@@ -1,34 +1,56 @@
+# app.py
 import streamlit as st
-import nltk
 import pickle
 import numpy as np
 import os
-import re
 import matplotlib.pyplot as plt
-os.environ["TOKENIZERS_PARALLELISM"] = "false"
+import warnings
 
+# --------------------------
+# Fix warnings
+# --------------------------
+warnings.filterwarnings("ignore", category=UserWarning)
+
+# --------------------------
+# Ensure NLTK punkt is available
+# --------------------------
+import nltk
+
+@st.cache_resource
+def download_nltk_data():
+    nltk.download("punkt")
+
+download_nltk_data()
+
+# --------------------------
+# Import NLP libraries
+# --------------------------
 from sentence_transformers import SentenceTransformer
 from sumy.parsers.plaintext import PlaintextParser
 from sumy.nlp.tokenizers import Tokenizer
 from sumy.summarizers.lsa import LsaSummarizer
 
+# --------------------------
 # Load artifacts
-with open('svm_model.pkl', 'rb') as f:
+# --------------------------
+with open("model.pkl", "rb") as f:
     model = pickle.load(f)
-with open('label_encoder.pkl', 'rb') as f:
+
+with open("label_encoder.pkl", "rb") as f:
     le = pickle.load(f)
 
+# --------------------------
+# Load embedder
+# --------------------------
 @st.cache_resource
-def download_nltk_data():
-    nltk.download('punkt')
-
-download_nltk_data()
-
 def load_embedder():
-    return SentenceTransformer('all-mpnet-base-v2', device='cpu')
+    return SentenceTransformer("all-mpnet-base-v2", device="cpu")
 
 embedder = load_embedder()
 
+# --------------------------
+# Helper functions
+# --------------------------
 def summarize(text, num_sentences=2):
     parser = PlaintextParser.from_string(text, Tokenizer("english"))
     summarizer = LsaSummarizer()
@@ -37,45 +59,72 @@ def summarize(text, num_sentences=2):
 
 def process_complaint(text):
     summary = summarize(text)
-    embedding = embedder.encode([text], convert_to_numpy=True, device='cpu')
+    embedding = embedder.encode([text], convert_to_numpy=True)
     label_idx = model.predict(embedding)[0]
     department = le.inverse_transform([label_idx])[0]
     probas = model.predict_proba(embedding)[0]
     return department, probas, summary
 
-# --- Session state init ---
+# --------------------------
+# Initialize session state
+# --------------------------
 if "complaint_text" not in st.session_state:
     st.session_state.complaint_text = ""
 
-# --- Sidebar ---
+# --------------------------
+# Sidebar
+# --------------------------
 with st.sidebar:
     st.title("ℹ️ Model Info")
     st.markdown("---")
     st.metric("Accuracy", "89%")
     st.metric("Training Samples", "50,000")
-    st.metric("Classes", "5")
+    st.metric("Classes", len(le.classes_))
     st.metric("Embedding Model", "SBERT MPNet")
     st.metric("Classifier", "SVM")
     st.markdown("---")
     st.markdown("**Dataset:** [CFPB Consumer Complaints](https://www.consumerfinance.gov/data-research/consumer-complaints/)")
 
-# --- Main UI ---
+# --------------------------
+# Main UI
+# --------------------------
 st.title("🏦 Consumer Complaint Router")
 st.markdown("Enter a consumer complaint to automatically route it to the right department.")
 
 # Example buttons
 st.markdown("**Try an example:**")
 col1, col2, col3 = st.columns(3)
+
 if col1.button("💳 Credit Report"):
-    st.session_state["complaint_text"] = ("I have been trying to get a fraudulent account removed from my credit report for months. The credit bureau keeps verifying the account despite me sending them proof that I never opened it.")
+    st.session_state.complaint_text = (
+        "I have been trying to get a fraudulent account removed from my "
+        "credit report for months. The credit bureau keeps verifying "
+        "the account despite me sending proof that I never opened it."
+    )
+
 if col2.button("🏠 Mortgage"):
-    st.session_state["complaint_text"] = ("I took out a 30 year fixed mortgage in 2018 and the bank has been charging me incorrect escrow amounts every month. They refuse to provide a proper escrow analysis.")
+    st.session_state.complaint_text = (
+        "I took out a 30 year fixed mortgage in 2018 and the bank has been "
+        "charging me incorrect escrow amounts every month. They refuse "
+        "to provide a proper escrow analysis."
+    )
+
 if col3.button("📞 Debt Collection"):
-    st.session_state["complaint_text"] = ("A debt collector keeps calling me 5 times a day even after I sent them a cease and desist letter. They are violating the FDCPA by continuing to harass me.")
+    st.session_state.complaint_text = (
+        "A debt collector keeps calling me 5 times a day even after I sent "
+        "them a cease and desist letter. They are violating the FDCPA "
+        "by continuing to harass me."
+    )
 
-complaint = st.text_area("Complaint", key="complaint_text",
-                          height=200, placeholder="Describe your complaint here...")
+# Complaint input
+complaint = st.text_area(
+    "Complaint",
+    key="complaint_text",
+    height=200,
+    placeholder="Describe your complaint here..."
+)
 
+# Analyze button
 if st.button("Analyze"):
     if complaint.strip():
         with st.spinner("Analyzing..."):
@@ -101,5 +150,6 @@ if st.button("Analyze"):
         ax.spines[['top', 'right']].set_visible(False)
         plt.tight_layout()
         st.pyplot(fig)
+
     else:
         st.warning("Please enter a complaint.")
