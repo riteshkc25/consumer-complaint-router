@@ -16,7 +16,7 @@ warnings.filterwarnings("ignore", category=UserWarning)
 # Ensure NLTK punkt is available
 # --------------------------
 def download_nltk_data():
-    nltk.download("punkt")
+    nltk.download("punkt", quiet=True)  # quiet=True suppresses messages
 
 download_nltk_data()
 
