@@ -17,6 +17,7 @@ warnings.filterwarnings("ignore", category=UserWarning)
 # --------------------------
 def download_nltk_data():
     nltk.download("punkt", quiet=True)  # quiet=True suppresses messages
+    nltk.download("punkt_tab", quiet=True)
 
 download_nltk_data()
 
