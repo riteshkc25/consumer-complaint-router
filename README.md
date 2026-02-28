@@ -12,20 +12,37 @@ The dataset is huge and has 3.7M rows. The two key columns used are 'Consumer co
 
 # Classification
 Attempt 1: TF-IDF + logistic regression (Accuracy 28% , Macro F1 19%) - Not good, despite balanced datasets macro F1 < Accuracy, suggesting sementic issues. 
-Attempt 2: DistilBert + logistic regression (Accuracy 84%, Macro F1 84%) - Model performance improved significantly because model understands sentence context. This works generally, but it was never trained to produce good sentence level representations
-Attempt 3: SBERT + SVM (Accuracy 89%, Macro F1 89%) - Model performance improved and get us closer to production level. Sentence-BERT was fine-tuned specifically to produce semantically meaningful sentence embeddings. This makes it much better suited for classification tasks.
+
+Attempt 2: DistilBert + logistic regression (Accuracy 84%, Macro F1 84%) - Model performance improved significantly because model understands sentence context. This works generally, but it was never trained to produce good sentence level representations.
+
+Attempt 3: SBERT + SVM (Accuracy 89%, Macro F1 89%) - Model performance improved and got us closer to the production level. Sentence-BERT was fine-tuned specifically to produce semantically meaningful sentence embeddings. This makes it much better suited for classification tasks.
 
 # Final Confusion Matrix
-![alt text](https://github.com/riteshkc25/consumer-complaint-router/blob/main/figures/sbert_cm.png)
+![alt text](figures/sbert_cm.png)
 
 # Model Comparison
-![alt text](https://github.com/riteshkc25/consumer-complaint-router/blob/main/figures/model_comparison.png)
+![alt text](figures/model_comparison.png)
 
 # Summarization 
 I used LSA (Latent Semantic Analysis) extractive summarization via the sumy library. The extractive means it picks the most important existing sentences and does not generate any new text. In this case, I use top 2 sentences. 
 
 # Streamlit App
-This final step combines classification and summarization into a single process_complaint() function, then wraps it in a Streamlit UI (Used LLM help and modified accordingly).
+This final step combines classification and summarization into a single process_complaint() function, then wraps it in a Streamlit UI (Used chatbot's help and modified accordingly).
+![App Screenshot](figures/app_screenshot.png)
+
+# Features:
+- Automatic routing of complaints to the right department
+- Summarizes complaints using LSA summarization
+- Shows department confidence in a horizontal bar chart
+- Shows clickable sidebar for model stats (accuracy, dataset size, model used) 
+- Example buttons for quick testing
+- Built with **Streamlit**, **Sentence Transformers**, **SVM**, and **Sumy**
+
+## Demo
+
+Try the app live on Streamlit Cloud:  
+[Consumer Complaint Router](https://share.streamlit.io/<riteshkc25>/nlp-complaint-classification/main/app.py)
+
 
 
 
