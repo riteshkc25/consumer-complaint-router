@@ -1,4 +1,5 @@
 import streamlit as st
+import nltk
 import pickle
 import numpy as np
 import os
@@ -19,7 +20,6 @@ with open('label_encoder.pkl', 'rb') as f:
 
 @st.cache_resource
 def download_nltk_data():
-    import nltk
     nltk.download('punkt')
 
 download_nltk_data()
