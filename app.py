@@ -18,6 +18,12 @@ with open('label_encoder.pkl', 'rb') as f:
     le = pickle.load(f)
 
 @st.cache_resource
+def download_nltk_data():
+    import nltk
+    nltk.download('punkt')
+
+download_nltk_data()
+
 def load_embedder():
     return SentenceTransformer('all-mpnet-base-v2', device='cpu')
 
