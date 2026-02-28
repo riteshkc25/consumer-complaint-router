@@ -81,7 +81,7 @@ with st.sidebar:
     st.title("ℹ️ Model Info")
     st.markdown("---")
     st.metric("Accuracy", "89%")
-    st.metric("Training Samples", "50,000")
+    st.metric("Training Samples", "100,000")
     st.metric("Classes", len(le.classes_))
     st.metric("Embedding Model", "SBERT MPNet")
     st.metric("Classifier", "SVM")
