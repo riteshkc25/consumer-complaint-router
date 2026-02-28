@@ -41,7 +41,7 @@ This final step combines classification and summarization into a single process_
 ## Demo
 
 Try the app live on Streamlit Cloud:  
-[Consumer Complaint Router](https://share.streamlit.io/<riteshkc25>/nlp-complaint-classification/main/app.py)
+[Consumer Complaint Router](https://nlp-consumer-complaint-router.streamlit.app/)
 
 
 
