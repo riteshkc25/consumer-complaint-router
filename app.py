@@ -67,7 +67,7 @@ if col2.button("🏠 Mortgage"):
 if col3.button("📞 Debt Collection"):
     st.session_state["complaint_text"] = ("A debt collector keeps calling me 5 times a day even after I sent them a cease and desist letter. They are violating the FDCPA by continuing to harass me.")
 
-complaint = st.text_area("Complaint", key="complaint_text",,
+complaint = st.text_area("Complaint", key="complaint_text",
                           height=200, placeholder="Describe your complaint here...")
 
 if st.button("Analyze"):
