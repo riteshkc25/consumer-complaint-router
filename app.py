@@ -1,4 +1,5 @@
 # app.py
+import nltk
 import streamlit as st
 import pickle
 import numpy as np
@@ -14,9 +15,6 @@ warnings.filterwarnings("ignore", category=UserWarning)
 # --------------------------
 # Ensure NLTK punkt is available
 # --------------------------
-import nltk
-
-@st.cache_resource
 def download_nltk_data():
     nltk.download("punkt")
 
