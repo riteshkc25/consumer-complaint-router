@@ -49,6 +49,10 @@ embedder = load_embedder()
 # --------------------------
 # Helper functions
 # --------------------------
+from sumy.parsers.plaintext import PlaintextParser
+from sumy.nlp.tokenizers import Tokenizer
+from sumy.summarizers.lsa import LsaSummarizer
+
 def summarize(text, num_sentences=2):
     parser = PlaintextParser.from_string(text, Tokenizer("english"))
     summarizer = LsaSummarizer()
